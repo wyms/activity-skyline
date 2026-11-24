@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src https://api.github.com; base-uri 'none'; form-action 'none'; object-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Turn a GitHub profile or repository into an engraved, printable skyline. Explore the model in 3D and download its STL.">
+  <title>Commit Skyline — GitHub skyline studio</title>
+  <link rel="stylesheet" href="./studio.css">
+  <script defer src="./mesh.js"></script>
+  <script defer src="./calendar.js"></script>
+  <script defer src="./repository.js"></script>
+  <script defer src="./example.js"></script>
+  <script defer src="./profile-page.js"></script>
+  <script defer src="./kit.js"></script>
+  <script defer src="./viewer.js"></script>
+  <script defer src="./studio.js"></script>
+</head>
+<body>
+<a class="skip" href="#source-input">Skip to GitHub source</a>
+<header class="mast"><div class="shell mast-inner">
+  <a class="brand" href="#studio"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Commit Skyline</a>
+  <nav aria-label="Main"><a href="#studio" aria-current="page">Studio</a><a href="#print-guide" id="guide-link">Print guide</a></nav>
+</div></header>
+
+<main class="shell" id="studio">
+  <header class="intro"><h1>GitHub <em>skyline.</em></h1><p>Turn a year of GitHub activity into<br class="desktop-break"> a 3D-printable desk sculpture.</p></header>
+
+  <div class="workbench">
+    <section class="source rail-panel" aria-labelledby="source-heading">
+      <h2 id="source-heading">Build your model</h2>
+      <div class="mode-switch" role="group" aria-label="Activity source">
+        <button type="button" data-mode="repo" aria-pressed="true">Repository</button>
+        <button type="button" data-mode="profile" aria-pressed="false">Profile</button>
+        <button type="button" data-mode="file" aria-pressed="false">Local file</button>
+      </div>
+      <form id="source-form">
+        <label for="source-input" id="source-label">GitHub URL or handle</label>
+        <input id="source-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="240" value="vitejs/vite" placeholder="GitHub URL or handle" required>
+        <div class="source-fields">
+          <label>Year <select id="year"><option selected>2026</option></select></label>
+          <label id="author-field">Contributor <span class="optional">(optional)</span><input id="author" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40" placeholder="All contributors"></label>
+        </div>
+        <button id="load" class="button primary generate" type="submit"><span id="load-text">Generate skyline</span><span class="generate-mark" aria-hidden="true"></span></button>
+      </form>
+      <div id="profile-steps" hidden>
+        <ol class="steps">
+          <li><a id="calendar-link" target="_blank" rel="noopener noreferrer" aria-disabled="true">Enter a GitHub handle above</a></li>
+          <li>Save that page as HTML. In Chrome or Firefox use <strong>Save Page As</strong>. In Safari pick the <strong>Page Source</strong> format.</li>
+          <li><label>Choose the saved page <input id="calendar-file" type="file" accept=".html,.htm,text/html" disabled></label></li>
+        </ol>
+        <p class="hint">GitHub shows a profile calendar only on its own pages, so the studio reads the copy you save. The file stays on your device.</p>
+      </div>
+      <div id="file-fields" hidden>
+        <label>Activity file <input id="file" type="file" accept=".csv,.json,application/json,text/csv"></label>
+        <p class="hint">Daily counts in CSV or JSON. <button class="text-button" id="example-file" type="button">Get a sample CSV</button></p>
+      </div>
+      <div class="sample-row"><span id="sample-offer">Try a repository</span><button id="restore" type="button" class="text-button">vitejs/vite · 2026</button></div>
+      <p id="source-status" class="hint status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="gallery" id="preview" aria-labelledby="preview-heading">
+      <div class="gallery-head">
+        <div class="gallery-source"><span class="eyelabel" id="preview-heading">Model preview</span><div class="source-title"><h2 id="source-tag">vitejs/vite</h2><span id="example-tag">Example</span></div></div>
+        <fieldset class="forms"><legend class="sr-only">Sculpture form</legend><div class="shape-options">
+          <label><input type="radio" name="shape" value="contour"><span>Contour relief</span></label>
+          <label><input type="radio" name="shape" value="towers" checked><span>Architecture</span></label>
+        </div></fieldset>
+        <span id="preview-year" class="year-stamp">2026</span>
+      </div>
+      <div class="stage">
+        <img id="sample-poster" src="./vite-2026-studio.png" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+        <canvas id="model-view" tabindex="0" role="img" aria-label="Interactive skyline. Drag or use the arrow keys to rotate. Plus and minus zoom. Home resets the camera."></canvas>
+        <div id="canvas-fallback" hidden>Interactive 3D is unavailable in this browser. You can still download the STL.</div>
+      </div>
+      <div class="view-toolbar" aria-label="Model controls">
+        <div class="presets" role="group" aria-label="Camera angle">
+          <button type="button" data-view="iso" aria-pressed="true">Angled</button><button type="button" data-view="front" aria-pressed="false">Front</button><button type="button" data-view="top" aria-pressed="false">Top</button>
+        </div>
+        <span class="orbit-hint" title="Drag to rotate. After zooming, use Shift-drag to pan.">Drag to rotate</span>
+        <div class="zoom" role="group" aria-label="Camera zoom">
+          <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button><button id="reset-view" type="button" title="Reset camera and zoom" aria-label="Reset camera and zoom">100%</button><button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+        </div>
+      </div>
+      <div class="model-strip">
+        <div class="model-dim"><span class="eyelabel">Dimensions</span><span id="dimensions">179 × 37 × 26.4 mm</span></div>
+        <div class="assembly-switch" role="group" aria-label="Model layout">
+          <button type="button" data-layout="assembled" aria-pressed="true">Assembled</button><button type="button" data-layout="plate" aria-pressed="false">Print bed</button>
+        </div>
+      </div>
+      <div class="stl-row"><div><strong>Printable model</strong><small>Annual section and end cap in one file.</small></div>
+        <div class="export-tools"><button id="save-image" type="button" class="text-button" title="Save the current view as a 1920-pixel PNG" disabled>Save image</button>
+          <button id="download-color" type="button" class="button export-stl" disabled>Download color 3MF</button>
+          <button id="download-stl" type="button" class="button export-stl" disabled><span class="download-icon" aria-hidden="true"></span>Download STL</button></div>
+      </div>
+      <p id="stl-status" class="hint status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="personalize rail-panel" aria-labelledby="finish-heading">
+      <h2 id="finish-heading">Finish &amp; engraving</h2>
+      <fieldset class="finish"><legend>Surface finish</legend><div class="swatches">
+        <label title="Evergreen"><input type="radio" name="finish" value="Evergreen" checked><span><i class="evergreen"></i>Evergreen</span></label>
+        <label title="Glacier"><input type="radio" name="finish" value="Glacier"><span><i class="glacier"></i>Glacier</span></label>
+        <label title="Marigold"><input type="radio" name="finish" value="Marigold"><span><i class="marigold"></i>Marigold</span></label>
+      </div></fieldset>
+      <label for="label">Base inscription</label><input id="label" type="text" maxlength="24" value="vitejs" autocomplete="off" placeholder="GitHub handle" aria-describedby="label-hint">
+      <p class="hint" id="label-hint">Up to 24 characters. The year is engraved alongside.</p>
+      <div class="inscription"><span class="eyelabel">Engraving proof</span><strong id="inscription-proof">VITEJS / 2026</strong></div>
+    </section>
+    <section class="activity" aria-labelledby="activity-heading">
+    <div class="activity-title"><h2 id="activity-heading">Activity <em>calendar.</em></h2><span id="calendar-year">2026</span></div>
+    <dl class="facts">
+      <div><dt id="count-title">Commits</dt><dd id="total-count">1,147</dd></div>
+      <div><dt>Active days</dt><dd id="active-days">213</dd></div>
+      <div><dt>Peak per day</dt><dd id="peak-count">30</dd></div>
+    </dl>
+    <div class="calendar-wrap"><canvas id="activity-calendar" role="img" aria-label="Activity for the selected year"></canvas>
+      <div class="month-labels" aria-hidden="true"><span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span></div>
+    </div>
+    </section>
+  </div>
+
+  <details class="drawer" id="print-files"><summary>Print kit &amp; supplier quote</summary><div class="drawer-content">
+    <div class="delivery-options" role="group" aria-label="Print package">
+      <button class="choice" type="button" data-delivery="files" aria-pressed="true"><strong>Print it yourself</strong><small>Separate STLs, image proof and print guide</small></button>
+      <button class="choice" type="button" data-delivery="physical" aria-pressed="false"><strong>Have it printed</strong><small>Prepare a quote request for a U.S. shop</small></button>
+    </div>
+    <div id="physical-fields" hidden>
+      <div class="order-fields"><label>Identical pieces <input type="number" id="quantity" value="1" min="1" max="250" step="1"></label>
+        <label>U.S. destination ZIP <span class="optional">(optional)</span><input id="destination" type="text" inputmode="numeric" maxlength="5" placeholder="Five digits"></label></div>
+      <p class="hint">Send the package to the printer of your choice. <a href="https://mandarin3d.com/pricing" target="_blank" rel="noopener noreferrer">Mandarin 3D rates</a> · <a href="https://dcadditivepros.com/pages/build-and-ship" target="_blank" rel="noopener noreferrer">White-label fulfillment</a></p>
+    </div>
+    <div class="download-row"><button id="export" class="button secondary" type="button" disabled>Download print kit</button><p id="export-status" class="hint" role="status" aria-live="polite">ZIP with individual STL files in millimeters.</p></div>
+  </div></details>
+  <details class="drawer" id="print-guide"><summary>Print guide &amp; data sources</summary><div class="drawer-content guide-grid">
+    <div><h3>At the printer</h3><p>Use millimeters and 100% scale. The single STL places both pieces flat with a 4 mm gap. Start with a 0.4 mm nozzle and 0.2 mm layers. Switch from charcoal to the tower color above the 6.4 mm base.</p></div>
+    <div><h3>Reading the skyline</h3><p>Weeks run from left to right. Architecture gives each active day its own roof. Contour relief traces seven ridges, one per weekday. Both shapes use a logarithmic height scale for the year. The cap lifts off to attach next year’s section.</p></div>
+    <div><h3>Activity sources</h3><p>A repository uses default-branch commits grouped by UTC committer date, read from GitHub’s public API in your browser. A profile uses the contribution calendar page you save from GitHub. Files you choose are read on your device and are not uploaded. For a private repository, import daily counts from a local checkout. Commit Skyline is an independent project and is not affiliated with GitHub.</p></div>
+  </div></details>
+  <noscript><p>Enable JavaScript to generate, rotate and download a model. The preview shows the 2026 Vite example.</p></noscript>
+</main>
+</body>
+</html>
