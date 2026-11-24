@@ -10,21 +10,27 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 // Everything allowed at the top of the repository, and the complete published site.
 const rootEntries = [".gitignore", "LICENSE", "README.md", "SECURITY.md", "package.json", "site", "tests", "tools"];
 const siteFiles = [
-  ".nojekyll", "calendar.js", "example.js", "index.html", "kit.js", "mesh.js", "profile-page.js", "repository.js",
+  ".nojekyll", "calendar.js", "example.js", "index.html", "kit.js", "mesh.js", "profile-lookup.js", "profile-page.js",
+  "repository.js",
   "studio.css", "studio.js", "viewer.js", "vite-2026-studio.png",
   "fonts/Cormorant-Garamond-LICENSE.txt", "fonts/DM-Sans-LICENSE.txt",
   "fonts/cormorant-garamond-400-italic.woff2", "fonts/cormorant-garamond-500-normal.woff2",
   "fonts/dm-sans-variable.woff2"
 ];
 const policy = "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; " +
-  "connect-src https://api.github.com; base-uri 'none'; form-action 'none'; object-src 'none'; " +
+  "connect-src https://api.github.com https://github-contributions-api.jogruber.de; " +
+  "base-uri 'none'; form-action 'none'; object-src 'none'; " +
   "require-trusted-types-for 'script'; trusted-types 'none'";
 // Hosts the site may link to or call. XML namespace names are identifiers and are never fetched.
 const linkHosts = ["github.com", "mandarin3d.com", "dcadditivepros.com"];
 const scriptHosts = ["api.github.com", "github.com"];
+// The independent calendar service behind profile lookups. Only profile-lookup.js may name or call it.
+const lookupHost = "github-contributions-api.jogruber.de";
+// The only scripts that may make a request, each to its own host.
+const requesters = ["profile-lookup.js", "repository.js"];
 const namespaceHosts = ["schemas.openxmlformats.org", "schemas.microsoft.com"];
 // Hosts that may be named in documentation, licences and tests. Names ending in .test are reserved and never resolve.
-const documentHosts = [...linkHosts, ...scriptHosts, "www.github.com", "docs.github.com", "gitlab.com",
+const documentHosts = [...linkHosts, ...scriptHosts, lookupHost, "www.github.com", "docs.github.com", "gitlab.com",
   "openfontlicense.org", "scripts.sil.org", "127.0.0.1", "localhost"];
 // The only elements and attributes the page uses. Anything else, including every on* handler and style, fails.
 const elements = ["a", "body", "br", "button", "canvas", "dd", "details", "div", "dl", "dt", "em", "fieldset", "form",
@@ -132,9 +138,10 @@ for (const file of siteFiles.filter(name => /\.(?:js|css)$/.test(name))) {
   const text = read("site/" + file);
   for (const call of browserCalls) if (call.test(text)) fail("site/" + file, "uses " + call.source);
   for (const address of addresses(text))
-    if (!isNamespace(address) && !(address.secure && scriptHosts.includes(address.host))) fail("site/" + file, "unreviewed address " + address.text);
+    if (!isNamespace(address) && !(address.secure && (file === "profile-lookup.js" ? address.host === lookupHost : scriptHosts.includes(address.host))))
+      fail("site/" + file, "unreviewed address " + address.text);
   if (file.endsWith(".js")) {
-    if (/\bfetch\b/.test(text) && file !== "repository.js") fail("site/" + file, "only repository.js may make a request");
+    if (/\bfetch\b/.test(text) && !requesters.includes(file)) fail("site/" + file, "only " + requesters.join(" and ") + " may make a request");
     for (const [made] of text.matchAll(/createElement\s*\([^)]*\)/g))
       if (!['createElement("a")', 'createElement("canvas")'].includes(made)) fail("site/" + file, "creates an unreviewed element: " + made);
   } else {

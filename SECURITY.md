@@ -8,9 +8,10 @@ Please report a suspected vulnerability privately through this repository's **Se
 
 - The site is static files served by GitHub Pages. There is no server code, database, account, cookie or analytics.
 - Nothing is loaded from another host. The scripts, styles and fonts are all in `site/`, and there are no packages to install.
-- The only network request the site makes is to GitHub's public API (`api.github.com`) when you load a repository. The request carries no credentials and no referrer.
+- The site makes two kinds of network request, each without credentials or a referrer. Loading a repository asks GitHub's public API (`api.github.com`). Looking up a profile asks `github-contributions-api.jogruber.de`, an independent open-source service that reads GitHub's public calendar. That service receives the handle and year and, like any web server, sees where the request came from.
+- The service's reply is accepted only as one complete year of dates and whole numbers. It is limited in size and time, and nothing in it is shown as markup or run. If it fails, the saved-page route still works and asks nobody but GitHub.
 - Files you choose (activity files, a saved calendar page) are read in your browser and are not uploaded.
-- A content security policy allows scripts, styles, fonts and images from the site itself and nothing else, forbids inline code, limits requests to GitHub's API, and turns on Trusted Types so the page cannot build HTML from text. The browser enforces it.
+- A content security policy allows scripts, styles, fonts and images from the site itself and nothing else, forbids inline code, limits requests to GitHub's API and the calendar service, and turns on Trusted Types so the page cannot build HTML from text. The browser enforces it.
 - The saved calendar page is read as plain text. It is never parsed into a document or added to the page.
 - Names taken from local files are shown as text, are never turned into links, and lose control characters before they are written into a print guide.
 - The site refuses to run inside another site's frame.
@@ -19,4 +20,4 @@ Please report a suspected vulnerability privately through this repository's **Se
 
 ## Limits
 
-GitHub Pages does not let a site set its own response headers, so the content policy is delivered in the page itself. All project sites under one GitHub account share an origin; this site stores nothing in the browser.
+GitHub Pages does not let a site set its own response headers, so the content policy is delivered in the page itself. All project sites under one GitHub account share an origin; this site stores nothing in the browser. Profile lookups depend on a service this project does not run: it could stop or return wrong counts, but it cannot run code on the page.

@@ -8,7 +8,7 @@ Commit Skyline is an independent project and is not affiliated with GitHub.
 
 1. Choose where the activity comes from.
    - **Repository**: paste a public repository URL or `owner/repo`. The studio reads default-branch commits from GitHub's public API and groups them by UTC committer date. Add a username to count one contributor.
-   - **Profile**: enter a handle and year, open the calendar link the studio gives you, save that page as HTML, and choose the saved file. GitHub shows a profile calendar only on its own pages, so the studio reads the copy you save.
+   - **Profile**: enter a handle and year. An independent open-source service, `github-contributions-api.jogruber.de`, looks up GitHub's public contribution calendar and receives the handle and year. To ask nobody but GitHub, or if that service is down, open **Bring the calendar in yourself**: save the calendar page the studio links to as HTML and choose the saved file.
    - **Local file**: a CSV headed `date,count`, or JSON such as `{"year":2025,"days":{"2025-01-14":4}}`. Use one calendar year per file.
 2. Pick **Architecture** or **Contour relief**, a finish, and the base inscription (up to 24 characters plus the year).
 3. Download the STL, a two-colour 3MF, a PNG of the current view, or a print kit with separate files and a print guide.
