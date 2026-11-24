@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node --test tests/*.test.cjs",
     "check": "node tools/check.mjs",
-    "serve": "python3 -m http.server --bind 127.0.0.1 --directory site 4173"
+    "serve": "python3 -m http.server --bind 127.0.0.1 --directory site 4173",
+    "publish-site": "sh tools/publish.sh"
   }
 }

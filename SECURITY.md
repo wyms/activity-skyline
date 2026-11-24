@@ -15,7 +15,7 @@ Please report a suspected vulnerability privately through this repository's **Se
 - Names taken from local files are shown as text, are never turned into links, and lose control characters before they are written into a print guide.
 - The site refuses to run inside another site's frame.
 
-`node tools/check.mjs` keeps that shape in place. It fails when the page's policy, elements, attributes, outbound links, script calls or file list differ from what was reviewed, and it runs on every push before anything is published. A change to `tools/`, `tests/` or `.github/` changes the checks themselves and needs a careful read.
+`node tools/check.mjs` keeps that shape in place. It fails when the page's policy, elements, attributes, outbound links, script calls or file list differ from what was reviewed, and the publish command runs it, with the tests, before anything goes live. A change to `tools/` or `tests/` changes the checks themselves and needs a careful read.
 
 ## Limits
 

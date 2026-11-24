@@ -1,4 +1,4 @@
-// Publish checks. Run before every commit and in CI: `node tools/check.mjs`.
+// Publish checks. Run before every commit and by tools/publish.sh: `node tools/check.mjs`.
 // They fail when the repository holds a file, address, script pattern or personal detail that was not reviewed.
 // The browser's content policy is the enforcement; these checks keep that policy and the reviewed shape in place.
 import {readFileSync, readdirSync, statSync, existsSync} from "node:fs";
@@ -8,9 +8,9 @@ import path from "node:path";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 // Everything allowed at the top of the repository, and the complete published site.
-const rootEntries = [".github", ".gitignore", "LICENSE", "README.md", "SECURITY.md", "package.json", "site", "tests", "tools"];
+const rootEntries = [".gitignore", "LICENSE", "README.md", "SECURITY.md", "package.json", "site", "tests", "tools"];
 const siteFiles = [
-  "calendar.js", "example.js", "index.html", "kit.js", "mesh.js", "profile-page.js", "repository.js",
+  ".nojekyll", "calendar.js", "example.js", "index.html", "kit.js", "mesh.js", "profile-page.js", "repository.js",
   "studio.css", "studio.js", "viewer.js", "vite-2026-studio.png",
   "fonts/Cormorant-Garamond-LICENSE.txt", "fonts/DM-Sans-LICENSE.txt",
   "fonts/cormorant-garamond-400-italic.woff2", "fonts/cormorant-garamond-500-normal.woff2",
@@ -39,7 +39,7 @@ const browserCalls = [/innerHTML/, /outerHTML/, /insertAdjacentHTML/, /document\
   /\bimport\s*\(/, /XMLHttpRequest/, /WebSocket/, /EventSource/, /RTCPeerConnection/, /sendBeacon/, /serviceWorker/,
   /\bWorker\b/, /window\.open/, /srcdoc/, /javascript:/i, /\blocation\b/, /\bnavigator\b/, /document\.domain/,
   /window\.name/, /["'`]\/\/[\w.-]/];
-const textTypes = /\.(?:html|css|js|cjs|mjs|json|md|txt|yml|yaml)$|(?:^|\/)\.[\w.-]+$|(?:^|\/)LICENSE$/i;
+const textTypes = /\.(?:html|css|js|cjs|mjs|json|md|txt|sh)$|(?:^|\/)\.[\w.-]+$|(?:^|\/)LICENSE$/i;
 
 const problems = [];
 const fail = (file, text) => problems.push(file + ": " + text);

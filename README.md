@@ -33,11 +33,12 @@ Requires Node 20 or later. There are no packages to install.
 npm test         # unit tests and the publish checks
 npm run check    # publish checks only
 npm run serve    # serves site/ on 127.0.0.1:4173
+npm run publish-site   # checks, tests, then publishes site/
 ```
 
 ## How it is published
 
-`site/` is the whole website. On each push, `.github/workflows/site.yml` runs the tests and publish checks. When the repository is public, a push to `main` then packages `site/` and publishes it to GitHub Pages. See [SECURITY.md](SECURITY.md) for how the site is locked down.
+`site/` is the whole website. `npm run publish-site` runs the publish checks and the tests, then copies `site/` to the `gh-pages` branch, which GitHub Pages serves as it is. Pushing to `main` does not change the live site. See [SECURITY.md](SECURITY.md) for how the site is locked down.
 
 ## Fonts
 

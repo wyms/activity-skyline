@@ -6,7 +6,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const root = path.join(__dirname, "..");
-const entries = [".github", ".gitignore", "README.md", "SECURITY.md", "package.json", "site", "tests", "tools"];
+const entries = [".gitignore", "README.md", "SECURITY.md", "package.json", "site", "tests", "tools"];
 const check = (directory, env = {}) => spawnSync(process.execPath, [path.join(directory, "tools/check.mjs")],
   {encoding:"utf8", env:{PATH:process.env.PATH, ...env}, timeout:60000});
 // Runs the checks on a copy of the repository after one change has been made to it.
