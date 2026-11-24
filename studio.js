@@ -142,7 +142,6 @@
   function refreshProfileSteps() {
     const link = el("calendar-link"), target = mode === "profile" ? profileTarget() : null;
     el("profile-steps").hidden = mode !== "profile";
-    el("load").hidden = mode === "profile";
     el("calendar-file").disabled = !target;
     if (target) {
       link.href = target.address;
@@ -158,7 +157,7 @@
     interrupt(); dirty = true;
     message("source-status", "");
     message("stl-status", mode === "file" ? "Load an activity file to download the new model." :
-      mode === "profile" ? "Choose the saved calendar page to update this model." :
+      mode === "profile" ? "Generate the selected profile to update this model." :
       "Generate the selected repository to update this model.");
     message("export-status", "Generate the selected model before downloading its kit.");
     refreshProfileSteps();
@@ -207,26 +206,26 @@
     catch (error) { message("source-status", error.message, true); return; }
     selectMode(source.kind, value);
     remembered[source.kind] = value;
-    if (source.kind === "profile") {
-      message("source-status", "GitHub shows a profile calendar only on its own pages. Follow the three steps to bring it here.");
-      el("calendar-link").focus();
-      return;
-    }
     const requestId = generation;
-    const year = Number(yearInput.value);
+    const year = Number(yearInput.value), profile = source.kind === "profile";
     controller = new AbortController();
     loading = true; refreshActions();
-    message("source-status", "Reading the selected year from GitHub…");
+    message("source-status", profile ? "Looking up the " + year + " calendar for @" + source.name + "…" :
+      "Reading the selected year from GitHub…");
     try {
-      const payload = await readSource(source, year, requestId, controller.signal);
+      const payload = profile ? await SkylineProfileLookup.read({name:source.name, year, signal:controller.signal}) :
+        await readSource(source, year, requestId, controller.signal);
       if (requestId !== generation) return;
       const next = SkylineCalendar.calendar(payload);
       showData(next, false, true);
-      message("source-status", next.active ? "Model generated for " + next.source + "." :
+      message("source-status", next.active ? "Model generated for " + (profile ? "@" : "") + next.source + "." :
         "This year has zero activity. The STL contains the engraved base and end cap.");
       revealOnPhone();
     } catch (error) {
-      if (requestId === generation) message("source-status", error.message || "Couldn’t read this source.", true);
+      if (requestId !== generation) return;
+      message("source-status", error.message || "Couldn’t read this source.", true);
+      // The saved-page route still works when the lookup service does not.
+      if (error.name === "ProfileLookupUnavailable") el("manual-steps").open = true;
     } finally {
       if (requestId === generation) { loading = false; controller = null; refreshActions(); }
     }

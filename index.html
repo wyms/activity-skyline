@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src https://api.github.com; base-uri 'none'; form-action 'none'; object-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src https://api.github.com https://github-contributions-api.jogruber.de; base-uri 'none'; form-action 'none'; object-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
@@ -14,6 +14,7 @@
   <script defer src="./repository.js"></script>
   <script defer src="./example.js"></script>
   <script defer src="./profile-page.js"></script>
+  <script defer src="./profile-lookup.js"></script>
   <script defer src="./kit.js"></script>
   <script defer src="./viewer.js"></script>
   <script defer src="./studio.js"></script>
@@ -45,20 +46,24 @@
         </div>
         <button id="load" class="button primary generate" type="submit"><span id="load-text">Generate skyline</span><span class="generate-mark" aria-hidden="true"></span></button>
       </form>
-      <div id="profile-steps" hidden>
-        <ol class="steps">
-          <li><a id="calendar-link" target="_blank" rel="noopener noreferrer" aria-disabled="true">Enter a GitHub handle above</a></li>
-          <li>Save that page as HTML. In Chrome or Firefox use <strong>Save Page As</strong>. In Safari pick the <strong>Page Source</strong> format.</li>
-          <li><label>Choose the saved page <input id="calendar-file" type="file" accept=".html,.htm,text/html" disabled></label></li>
-        </ol>
-        <p class="hint">GitHub shows a profile calendar only on its own pages, so the studio reads the copy you save. The file stays on your device.</p>
-      </div>
       <div id="file-fields" hidden>
         <label>Activity file <input id="file" type="file" accept=".csv,.json,application/json,text/csv"></label>
         <p class="hint">Daily counts in CSV or JSON. <button class="text-button" id="example-file" type="button">Get a sample CSV</button></p>
       </div>
-      <div class="sample-row"><span id="sample-offer">Try a repository</span><button id="restore" type="button" class="text-button">vitejs/vite · 2026</button></div>
       <p id="source-status" class="hint status" role="status" aria-live="polite"></p>
+      <div id="profile-steps" hidden>
+        <p class="hint">An independent service, github-contributions-api.jogruber.de, looks up the public calendar. It receives the handle and year.</p>
+        <details id="manual-steps" class="manual">
+          <summary>Bring the calendar in yourself</summary>
+          <ol class="steps">
+            <li><a id="calendar-link" target="_blank" rel="noopener noreferrer" aria-disabled="true">Enter a GitHub handle above</a></li>
+            <li>Save that page as HTML. On a computer use <strong>Save Page As</strong>, or the <strong>Page Source</strong> format in Safari. On a phone, touch and hold the link in step 1 and download the linked file.</li>
+            <li><label>Choose the saved page <input id="calendar-file" type="file" accept=".html,.htm,text/html" disabled></label></li>
+          </ol>
+          <p class="hint">This route asks nobody but GitHub. The saved file is read on your device and is not uploaded.</p>
+        </details>
+      </div>
+      <div class="sample-row"><span id="sample-offer">Try a repository</span><button id="restore" type="button" class="text-button">vitejs/vite · 2026</button></div>
     </section>
 
     <section class="gallery" id="preview" aria-labelledby="preview-heading">
@@ -137,7 +142,7 @@
   <details class="drawer" id="print-guide"><summary>Print guide &amp; data sources</summary><div class="drawer-content guide-grid">
     <div><h3>At the printer</h3><p>Use millimeters and 100% scale. The single STL places both pieces flat with a 4 mm gap. Start with a 0.4 mm nozzle and 0.2 mm layers. Switch from charcoal to the tower color above the 6.4 mm base.</p></div>
     <div><h3>Reading the skyline</h3><p>Weeks run from left to right. Architecture gives each active day its own roof. Contour relief traces seven ridges, one per weekday. Both shapes use a logarithmic height scale for the year. The cap lifts off to attach next year’s section.</p></div>
-    <div><h3>Activity sources</h3><p>A repository uses default-branch commits grouped by UTC committer date, read from GitHub’s public API in your browser. A profile uses the contribution calendar page you save from GitHub. Files you choose are read on your device and are not uploaded. For a private repository, import daily counts from a local checkout. Commit Skyline is an independent project and is not affiliated with GitHub.</p></div>
+    <div><h3>Activity sources</h3><p>A repository uses default-branch commits grouped by UTC committer date, read from GitHub’s public API in your browser. A profile uses GitHub’s public contribution calendar. An independent open-source service, github-contributions-api.jogruber.de, looks it up and receives the handle and year. You can instead save the calendar page from GitHub and choose that file. Files you choose are read on your device and are not uploaded. For a private repository, import daily counts from a local checkout. Commit Skyline is an independent project and is not affiliated with GitHub.</p></div>
   </div></details>
   <noscript><p>Enable JavaScript to generate, rotate and download a model. The preview shows the 2026 Vite example.</p></noscript>
 </main>
