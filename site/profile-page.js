@@ -3,7 +3,7 @@
 // Reads daily counts from a saved copy of GitHub's contribution calendar page.
 // The saved page is handled as plain text. It is never turned into a document, added to this page or run.
 const SkylineProfilePage = (() => {
-  const login = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$/;
+  const login = /^[A-Za-z0-9](?:[A-Za-z0-9_-]{0,37}[A-Za-z0-9])?$/;
   const dayLength = 86400000;
   const maxCount = 1_000_000;
   const maxLength = 8 * 1024 * 1024;

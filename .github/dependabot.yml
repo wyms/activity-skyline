@@ -1,7 +1,0 @@
-version: 2
-updates:
-  # Keeps the pinned workflow actions current. The site itself has no packages to update.
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly

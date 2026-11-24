@@ -57,7 +57,7 @@ const SkylineRepository = (() => {
     if ([403, 429].includes(response.status)) throw new Error("GitHub limited this request. Try again later or import daily counts from a local checkout.");
     if (response.status === 409) {
       const error = await response.json().catch(() => ({}));
-      if (/repository is empty/i.test(error.message || "")) return {items:[], more:false};
+      if (/repository is empty/i.test(error?.message || "")) return {items:[], more:false};
     }
     if (!response.ok) throw new Error("GitHub returned an error (" + response.status + "). Please try again.");
     const items = await response.json();

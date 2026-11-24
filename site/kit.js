@@ -74,6 +74,7 @@ const SkylineKit = (() => {
     });
   }
 
+  const plain = text => String(text).replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu, " ");
   function makeKit(model, data, options, geometry) {
     const estimatedWidth = model.joinX + model.capWidth;
     const natural = n => Number(n.toFixed(2));
@@ -81,8 +82,8 @@ const SkylineKit = (() => {
       "COMMIT SKYLINE", "Print instructions", "",
       "Inscription: " + model.engravedText,
       ...(options.physical ? ["Calendar: " + data.year] : [
-        "Source: " + (options.isSample ? "fictional studio sample" : (data.source || "locally imported daily counts").replace(/[\r\n]/g," ")),
-        ...(data.contributor ? ["Contributor: @" + data.contributor.replace(/[\r\n]/g," ")] : []),
+        "Source: " + (options.isSample ? "fictional studio sample" : plain(data.source || "locally imported daily counts")),
+        ...(data.contributor ? ["Contributor: @" + plain(data.contributor)] : []),
         "Calendar: " + data.year + " | Total: " + data.total + " | Active days: " + data.active
       ]),
       model.style === "contour" ? "Sculpture form: contour relief. Each ridge traces one weekday, with the activity height sampled at the center of each week." :

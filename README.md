@@ -13,13 +13,13 @@ Commit Skyline is an independent project and is not affiliated with GitHub.
 2. Pick **Architecture** or **Contour relief**, a finish, and the base inscription (up to 24 characters plus the year).
 3. Download the STL, a two-colour 3MF, a PNG of the current view, or a print kit with separate files and a print guide.
 
-For a private repository, export daily counts from a full local checkout and import the file. Dates use each commit's own time zone:
+For a private repository, export daily counts from a full local checkout and import the file. Change the year in the command to the one you want. Dates use each commit's own time zone:
 
 ```sh
-git log --since=2025-01-01 --until=2026-01-01 --pretty=%cs | sort | uniq -c | awk 'BEGIN {print "date,count"} {print $2 "," $1}' > activity.csv
+git log --pretty=%cs | grep '^2025-' | sort | uniq -c | awk 'BEGIN {print "date,count"} {print $2 "," $1}' > activity.csv
 ```
 
-GitHub's anonymous API limit applies to repository lookups, and the studio stops after 5,000 commits in one year.
+GitHub's anonymous API limit of 60 requests an hour applies to repository lookups. A repository with more than 5,000 commits in the chosen year is too large to read this way; the studio reports that, and the local export above handles it.
 
 ## Print specification
 
@@ -37,7 +37,7 @@ npm run serve    # serves site/ on 127.0.0.1:4173
 
 ## How it is published
 
-`site/` is the whole website. On each push, `.github/workflows/site.yml` runs the tests and publish checks. When the repository is public, a push to `main` then publishes `site/` to GitHub Pages. See [SECURITY.md](SECURITY.md) for how the site is locked down.
+`site/` is the whole website. On each push, `.github/workflows/site.yml` runs the tests and publish checks. When the repository is public, a push to `main` then packages `site/` and publishes it to GitHub Pages. See [SECURITY.md](SECURITY.md) for how the site is locked down.
 
 ## Fonts
 

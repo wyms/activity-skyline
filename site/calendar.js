@@ -4,6 +4,11 @@ const SkylineCalendar = (() => {
   const dayLength = 86400000;
   const maxCount = 1_000_000;
 
+  // Names from files are shown and written into print guides, so control, format and line-break characters are dropped.
+  function clean(value, limit) {
+    return typeof value === "string" ? value.replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu, " ").trim().slice(0, limit) : "";
+  }
+
   function calendar(input) {
     const year = input?.year;
     if (!Number.isInteger(year) || year < 2008 || year > 9999)
@@ -29,9 +34,7 @@ const SkylineCalendar = (() => {
       if (count) active++;
       peak = Math.max(peak, count);
     }
-    const source = typeof input.source === "string" ? input.source.trim().slice(0,160) : "";
-    const contributor=typeof input.contributor === "string" ? input.contributor.trim().slice(0,39) : "";
-    const owner = typeof input.owner === "string" ? input.owner.trim().slice(0,39) : "";
+    const source = clean(input.source, 160), contributor = clean(input.contributor, 39), owner = clean(input.owner, 39);
     return {year, weeks, total, active, peak, source, contributor, owner, kind:input.kind === "repo" ? "repo" : "profile"};
   }
 
@@ -76,6 +79,6 @@ const SkylineCalendar = (() => {
     }
     return calendar({year,days,source:"Studio sample",kind:"profile"});
   }
-  return {calendar,importFile,sample};
+  return {calendar,importFile,sample,clean};
 })();
 if (typeof module !== "undefined" && module.exports) module.exports = SkylineCalendar;

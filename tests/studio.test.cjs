@@ -58,3 +58,15 @@ test("the proof is rendered from the selected mesh and finish",()=>{
   for(let i=0;i<green.length;i+=4){if(green[i+1]!==blue[i+1])different++;if(green[i]<75)ink++;}
   assert(different>5);assert(ink>300);
 });
+
+test("names from files lose control, direction and line-break characters before display and print guides", () => {
+  const hostile = "team\u202Eevil\u001b[2J\u2028line\u0085next\u200Bend\u0007";
+  const data = calendar({year:2025, source:hostile, contributor:"dev\u202E\u001b]0;x\u0007", days:{"2025-01-03":5}});
+  for (const value of [data.source, data.contributor]) assert.doesNotMatch(value, /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u);
+  assert.equal(data.source, "team evil [2J line next end");
+  const model = geometry.createModel({...data, label:"Team"});
+  const kit = unpack(makeKit(model, {...data, source:hostile, contributor:"dev\u202Eloper"}, {finish:"Evergreen", isSample:false}, geometry));
+  const guide = kit["print-guide.txt"].toString();
+  assert.doesNotMatch(guide.replace(/\r\n/g, ""), /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u);
+  assert.match(guide, /Source: team evil/);
+});

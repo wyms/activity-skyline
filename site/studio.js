@@ -88,7 +88,8 @@
     }
     refreshActions();
   }
-  function showData(next, isExample) {
+  // linked: the source was read from GitHub or typed as a handle, so its name may link there. Local files never link.
+  function showData(next, isExample, linked = false) {
     const nextSource = [next.kind, next.source, next.contributor].join("/").toLowerCase();
     if (customLabel && labelSource && labelSource !== nextSource) customLabel = false;
     labelSource = nextSource;
@@ -97,7 +98,7 @@
     const poster = el("sample-poster");
     poster.hidden = !isExample || customLabel || shape !== "contour" || finish !== "Evergreen";
     const sourceTag = el("source-tag"), sourceName = data.source || "Local activity";
-    const sourcePath = /^(repo|profile)$/.test(data.kind || "") && /^[\w.-]+(\/[\w.-]+)?$/.test(data.source || "") ? data.source : "";
+    const sourcePath = linked && /^[\w.-]+(\/[\w.-]+)?$/.test(data.source || "") ? data.source : "";
     if (sourcePath) {
       const link = document.createElement("a");
       link.href = "https://github.com/" + sourcePath; link.target = "_blank"; link.rel = "noopener noreferrer";
@@ -133,7 +134,10 @@
   function profileTarget() {
     let source;
     try { source = SkylineRepository.sourceFrom(sourceInput.value); } catch { return null; }
-    return source.kind === "profile" ? {name:source.name, year:Number(yearInput.value)} : null;
+    if (source.kind !== "profile") return null;
+    const target = {name:source.name, year:Number(yearInput.value)};
+    try { target.address = SkylineProfilePage.address(target.name, target.year); } catch { return null; }
+    return target;
   }
   function refreshProfileSteps() {
     const link = el("calendar-link"), target = mode === "profile" ? profileTarget() : null;
@@ -141,7 +145,7 @@
     el("load").hidden = mode === "profile";
     el("calendar-file").disabled = !target;
     if (target) {
-      link.href = SkylineProfilePage.address(target.name, target.year);
+      link.href = target.address;
       link.textContent = "Open the " + target.year + " calendar for @" + target.name + " on GitHub";
       link.removeAttribute("aria-disabled");
     } else {
@@ -217,7 +221,7 @@
       const payload = await readSource(source, year, requestId, controller.signal);
       if (requestId !== generation) return;
       const next = SkylineCalendar.calendar(payload);
-      showData(next, false);
+      showData(next, false, true);
       message("source-status", next.active ? "Model generated for " + next.source + "." :
         "This year has zero activity. The STL contains the engraved base and end cap.");
       revealOnPhone();
@@ -232,7 +236,7 @@
     sourceInput.value = "https://github.com/" + example.source;
     remembered.repo = sourceInput.value; yearInput.value = String(example.year);
     el("author").value = ""; el("file").value = ""; customLabel = false;
-    showData(example, true);
+    showData(example, true, true);
     message("source-status", "Loaded the included Vite repository snapshot.");
     revealOnPhone();
   });
@@ -246,7 +250,7 @@
     try {
       const imported = SkylineCalendar.importFile(await file.text());
       if (requestId !== generation) return;
-      if (!imported.source) imported.source = file.name.replace(/\.(csv|json)$/i, "");
+      if (!imported.source) imported.source = SkylineCalendar.clean(file.name.replace(/\.(csv|json)$/i, ""), 160);
       showData(imported, false);
       message("source-status", imported.active ? "Model generated from your local file." : "This file has zero activity. The STL contains the engraved base and end cap.");
       revealOnPhone();
@@ -271,7 +275,7 @@
       const days = SkylineProfilePage.read(await file.text(), target.year);
       if (requestId !== generation) return;
       const next = SkylineCalendar.calendar({source:target.name, year:target.year, kind:"profile", days});
-      showData(next, false);
+      showData(next, false, true);
       message("source-status", next.active ? "Model generated from the saved calendar for @" + next.source + "." :
         "This calendar has zero activity. The STL contains the engraved base and end cap.");
       revealOnPhone();
@@ -398,5 +402,5 @@
     }
   });
   selectMode("repo", example.source);
-  showData(example, true);
+  showData(example, true, true);
 })();

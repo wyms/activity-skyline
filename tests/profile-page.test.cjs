@@ -76,6 +76,7 @@ test("oversized, repetitive input is read in linear time", () => {
 
 test("the calendar link is built only from a valid handle and year", () => {
   assert.equal(address("octocat", 2025), "https://github.com/users/octocat/contributions?from=2025-01-01&to=2025-12-31");
+  assert.equal(address("octo_cat", 2024), "https://github.com/users/octo_cat/contributions?from=2024-01-01&to=2024-12-31");
   for (const name of ["", "-lead", "trail-", "two/parts", "a b", "a?x=1", "a#b", "../x", "a".repeat(40), "javascript:alert(1)", undefined, null, 7])
     assert.throws(() => address(name, 2025));
   for (const year of [2007, 1e4, 2025.5, "2025", NaN]) assert.throws(() => address("octocat", year));
