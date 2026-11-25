@@ -79,7 +79,7 @@ const SkylineKit = (() => {
     const estimatedWidth = model.joinX + model.capWidth;
     const natural = n => Number(n.toFixed(2));
     const printInfo = [
-      "GITHUB SKYLINE", "Print instructions", "",
+      "GH ACTIVITY SKYLINE", "Print instructions", "",
       "Inscription: " + model.engravedText,
       ...(options.physical ? ["Calendar: " + data.year] : [
         "Source: " + (options.isSample ? "fictional studio sample" : plain(data.source || "locally imported daily counts")),
@@ -110,7 +110,7 @@ const SkylineKit = (() => {
       if (!Number.isInteger(quantity) || quantity < 1 || quantity > 250) throw new Error("Choose 1–250 identical pieces per request.");
       if (options.zipCode && !/^\d{5}$/.test(options.zipCode)) throw new Error("Use a five-digit U.S. ZIP code or leave it blank.");
       files["print-request.txt"] = [
-        "GITHUB SKYLINE", "U.S. production quote request", "",
+        "GH ACTIVITY SKYLINE", "U.S. production quote request", "",
         "Please quote " + quantity + " complete desk piece" + (quantity === 1 ? "" : "s") + " from the two supplied STL files.",
         "Inscription: " + model.engravedText, (model.style === "contour" ? "Ridge finish: " : "Tower finish: ") + options.finish + " PLA over charcoal PLA. End cap: charcoal.",
         "Destination: " + (options.zipCode ? "U.S. ZIP " + options.zipCode : "U.S. ZIP to be confirmed."),

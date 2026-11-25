@@ -1,5 +1,5 @@
 {
-  "name": "github-skyline",
+  "name": "activity-skyline",
   "private": true,
   "description": "A browser studio that turns a year of GitHub activity into a 3D-printable desk sculpture.",
   "engines": {"node": ">=20"},

@@ -1,8 +1,8 @@
-# GitHub Skyline
+# GH Activity Skyline
 
 Turn a year of GitHub activity into an engraved, 3D-printable desk sculpture. Choose architectural towers or a flowing contour relief, explore the model in 3D, and download print-ready files. Everything runs in your browser.
 
-GitHub Skyline is an independent project. It is not affiliated with or endorsed by GitHub.
+GH Activity Skyline is an independent project. It is not affiliated with or endorsed by GitHub.
 
 ## Use the studio
 
